@@ -1,0 +1,46 @@
+Project GREENOUT: Greenhouse Gas Elimination
+
+After scrolling through several Breakout variants online, I was still most interested by the first one listed on Professor
+Duvall's website: Circus.  This version puts a spin on the dry game of Breakout by giving the game a story.  Rather than
+mindlessly break bricks, players help 2 performers pop balloons as they launch each other off a seesaw.
+
+I wanted to provide my Breakout project with a story that is pertinent to modern times, and I ultimately settled on
+designing my game around climate change.  Players will control a raft from the UN Project GREENOUT initiative that sits
+in various bodies of water around the world as it bounces a state-of-the-art device into the sky to rid the atmosphere
+of greenhouse gases. The five levels will take place in the five major oceans: Atlantic, Pacific, Indian, Arctic, and Antarctic.
+Different types of blocks will be scattered in unique configurations to each level, and a timer will count down 3 minutes
+per level.  Players will also have 3 lives.
+
+There will be four types of blocks in Project GREENOUT. The first three types of blocks will represent the three major
+greenhouse gases: CO2 (Carbon Dioxide), CH4 (Methane), and N2O (Nitrous Oxide).  The CO2 blocks will be the most basic
+and the most common, breaking after a single impact.  CH4 is the second-most abundant greenhouse gas in the atmosphere,
+and these blocks will accordingly require two hits before they break.  N20 will follow this pattern, requiring three hits to break.
+The latter two blocks will become increasingly common as the levels go on.
+
+The fourth type of block will be "Satellite" blocks.  Satellites occasionally fly through the atmosphere, and destroying
+one will release more toxins into the environment (in the form of more blocks).
+
+Occasionally, blocks will release power-ups which can be caught as they fall toward the water. 'Strength' power-ups will help
+your raft bounce the ball with more power on each turn (every hit will count as 2 hits for 20 seconds).  'Money' power-ups
+extend the length of your mission (extending your time remaining by 1 minute).  'Speed' power-ups result in the paddle moving
+at a faster speed for 20 seconds. 'Device' power-ups add an extra ball to gameplay.
+
+My paddle (raft) abilities include bouncing the ball in a specific direction based on where it lands, being able to 'jump'
+upwards on the spacebar being pressed, and changing size as levels increase (getting smaller).
+
+Some cheat keys I plan to include are:
+
+A- All blocks can now be destroyed with one hit
+M- Add a minute to the timer
+C- Clear all blocks in the current level
+L- Add an extra life
+R- Play R.I.P. SCREW by Travis Scott (Press to start and stop)
+S- Take the player directly to the secret level (see below)
+
+
+Finally, my substantial "extra" feature will be a secret level that begins after the Game Over screen has been displayed
+for 10 seconds.  During this post-game level, the view shifts downward and the raft bounces balls into the ocean to destroy
+trash on the ocean floor.  There will be equivalent blocks to the four described above (although they will appear differently
+underwater), and the game configuration will be upside down (with the raft sitting on top of the water and the blocks
+resting on the floor).  I believe this is a substantial edition because it puts a unique spin on the game by flipping it
+upside down.

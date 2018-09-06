@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
@@ -19,7 +20,7 @@ public class BreakoutGameManager extends Application
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final int BALL_SPEED = 60;
-    public static final int PADDLE_SPEED = 60;
+    public static final int RAFT_SPEED = 10;
 
     private Scene myScene;
     private Ball myBall;
@@ -62,12 +63,28 @@ public class BreakoutGameManager extends Application
         root.getChildren().add(myBall);
         root.getChildren().add(myRaft);
 
+        // respond to input
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+
         return scene;
     }
 
     // Change properties of shapes to animate them
     private void step(double elapsedTime) {
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
-        myRaft.step(elapsedTime, PADDLE_SPEED, myScene.getWidth(), myScene.getHeight());
+        myRaft.step(elapsedTime, RAFT_SPEED, myScene.getWidth(), myScene.getHeight());
+
+        if (myRaft.getBoundsInParent().intersects(myBall.getBoundsInParent())) {
+            myBall.raftCollision();
+        }
+    }
+
+    private void handleKeyInput (KeyCode code) {
+        if (code == KeyCode.RIGHT) {
+            myRaft.setX(myRaft.getX() + RAFT_SPEED);
+        }
+        else if (code == KeyCode.LEFT) {
+            myRaft.setX(myRaft.getX() - RAFT_SPEED);
+        }
     }
 }

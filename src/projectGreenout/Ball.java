@@ -31,4 +31,8 @@ public class Ball extends ImageView {
         this.setY(this.getY() + speed * this.directionY * elapsedTime);
     }
 
+    public void raftCollision() {
+        this.directionY *= -1;
+    }
+
 }

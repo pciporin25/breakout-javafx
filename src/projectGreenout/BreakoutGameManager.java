@@ -74,8 +74,9 @@ public class BreakoutGameManager extends Application
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
         myRaft.step(elapsedTime, RAFT_SPEED, myScene.getWidth(), myScene.getHeight());
 
+        //check for collision, and handle it if there is one
         if (myRaft.getBoundsInParent().intersects(myBall.getBoundsInParent())) {
-            myBall.raftCollision();
+            myBall.raftCollision(myRaft.getLayoutBounds().getWidth(), myRaft.getX());
         }
     }
 

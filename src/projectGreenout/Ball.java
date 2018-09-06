@@ -19,4 +19,16 @@ public class Ball extends ImageView {
         this.directionY = myDirectionY;
     }
 
+    public void step(double elapsedTime, int speed, double sceneWidth, double sceneHeight) {
+        if (this.getX() + this.width > sceneWidth || this.getX() < 0) {
+            this.directionX *= -1;
+        }
+        if (this.getY() + this.height > sceneHeight || this.getY() < 0) {
+            this.directionY *= -1;
+        }
+
+        this.setX(this.getX() + speed * this.directionX * elapsedTime);
+        this.setY(this.getY() + speed * this.directionY * elapsedTime);
+    }
+
 }

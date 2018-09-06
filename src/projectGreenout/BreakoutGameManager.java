@@ -19,6 +19,7 @@ public class BreakoutGameManager extends Application
     public static final String BOUNCER_IMAGE = "ball.gif";
     public static final String RAFT_IMAGE = "raft.gif";
     public static final String LEVEL1_BACKGROUND = "level1.jpg";
+    public static final int SCENE_SIZE = 500;
     public static final int FRAMES_PER_SECOND = 60;
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
@@ -37,7 +38,7 @@ public class BreakoutGameManager extends Application
     public void start(Stage myStage)
     {
         var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream(LEVEL1_BACKGROUND));
-        myScene = setupGame(400, 400, backgroundImage);
+        myScene = setupGame(SCENE_SIZE, SCENE_SIZE, backgroundImage);
         myStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
         myStage.setScene(myScene);
         myStage.show();
@@ -86,7 +87,8 @@ public class BreakoutGameManager extends Application
     }
 
     private void handleKeyInput (KeyCode code) {
-        if (code == KeyCode.RIGHT && myRaft.getX() + myRaft.getLayoutBounds().getWidth() < myScene.getWidth()) {
+        //check if raft is in bounds before processing movement
+        if (code == KeyCode.RIGHT && (myRaft.getX() + myRaft.getLayoutBounds().getWidth()) < myScene.getWidth()) {
             myRaft.setX(myRaft.getX() + RAFT_SPEED);
         }
         else if (code == KeyCode.LEFT && myRaft.getX() > 0) {

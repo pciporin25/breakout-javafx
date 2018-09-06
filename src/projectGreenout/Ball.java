@@ -32,7 +32,7 @@ public class Ball extends ImageView {
     }
 
     public void raftCollision(double raftWidth, double raftPositionX) {
-        this.directionY *= -1;
+        this.directionY = -1;
 
         //if ball intersects with second half of raft, x direction positive
         if (this.getX() > raftPositionX + (raftWidth/2)) {

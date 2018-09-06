@@ -7,7 +7,9 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -16,6 +18,7 @@ public class BreakoutGameManager extends Application
 {
     public static final String BOUNCER_IMAGE = "ball.gif";
     public static final String RAFT_IMAGE = "raft.gif";
+    public static final String LEVEL1_BACKGROUND = "level1.jpg";
     public static final int FRAMES_PER_SECOND = 60;
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
@@ -33,7 +36,8 @@ public class BreakoutGameManager extends Application
 
     public void start(Stage myStage)
     {
-        myScene = setupGame(400, 400, Color.AZURE);
+        var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream(LEVEL1_BACKGROUND));
+        myScene = setupGame(400, 400, backgroundImage);
         myStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
         myStage.setScene(myScene);
         myStage.show();
@@ -46,18 +50,19 @@ public class BreakoutGameManager extends Application
         animation.play();
     }
 
-    private Scene setupGame(int width, int height, Paint background) {
+    private Scene setupGame(int width, int height, Image background) {
         // create one top level collection to organize the things in the scene
-        var root = new Group();
+        var root = new AnchorPane();
 
         // create a place to see the shapes
-        var scene = new Scene(root, width, height, background);
+        var scene = new Scene(root, width, height, new ImagePattern(background));
 
         var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
         myBall = new Ball(image, 1, 1);
 
         image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
         myRaft = new Raft(image);
+        root.setBottomAnchor(myRaft, 0.0);
 
         // order added to the group is the order in which they are drawn
         root.getChildren().add(myBall);
@@ -81,10 +86,10 @@ public class BreakoutGameManager extends Application
     }
 
     private void handleKeyInput (KeyCode code) {
-        if (code == KeyCode.RIGHT) {
+        if (code == KeyCode.RIGHT && myRaft.getX() + myRaft.getLayoutBounds().getWidth() < myScene.getWidth()) {
             myRaft.setX(myRaft.getX() + RAFT_SPEED);
         }
-        else if (code == KeyCode.LEFT) {
+        else if (code == KeyCode.LEFT && myRaft.getX() > 0) {
             myRaft.setX(myRaft.getX() - RAFT_SPEED);
         }
     }

@@ -10,7 +10,8 @@ public class Raft extends ImageView {
     }
 
     public void step(double elapsedTime, int speed, double sceneWidth, double sceneHeight) {
-        this.setY(sceneHeight - 60);
+
+
     }
 
 }

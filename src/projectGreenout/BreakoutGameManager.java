@@ -70,8 +70,8 @@ public class BreakoutGameManager extends Application
         root.getChildren().add(myRaft);
 
 
-        var brick = new CO2();
-        root.getChildren().add(brick);
+        //var brick = new N2O();
+        //root.getChildren().add(brick);
 
         // respond to input
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));

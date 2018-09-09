@@ -95,7 +95,7 @@ public class BreakoutGameManager extends Application
     private void step(double elapsedTime) {
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
         myRaft.step();
-        myLevel.step(elapsedTime);
+        myLevel.step(elapsedTime, myRaft, myBall);
 
         if (myBall.getY() > myScene.getHeight()) {
             livesRemaining.set(livesRemaining.get() - 1);
@@ -144,7 +144,7 @@ public class BreakoutGameManager extends Application
     public void handleKeyInput(KeyCode code) {
         myRaft.handleKeyInput(code, myScene.getWidth());
         myBall.handleKeyInput(code);
-        myLevel.handleKeyInput(code);
+        myLevel.handleKeyInput(code, myRaft, myBall);
     }
 
 }

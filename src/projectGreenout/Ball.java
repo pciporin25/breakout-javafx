@@ -15,9 +15,14 @@ public class Ball extends ImageView {
     private double startPosY;
 
     private int strengthMultiplier = 1;
+    private int multiplierCountdown = -1;
+    Image original;
+    Image multiplied = new Image(N2O.class.getClassLoader().getResourceAsStream("ball-multiplied.gif"));
+
 
     public Ball(Image image, double myDirectionX, double myDirectionY, double posX, double posY) {
         super(image);
+        this.original = image;
         this.outOfPlay = false;
 
         this.width = image.getWidth();
@@ -43,6 +48,13 @@ public class Ball extends ImageView {
 
         this.setX(this.getX() + speed * this.directionX * elapsedTime);
         this.setY(this.getY() + speed * this.directionY * elapsedTime);
+
+        if (multiplierCountdown>0) {
+            multiplierCountdown--;
+        }
+        else if (multiplierCountdown!=-1) {
+            toggleStrengthMultiplier();
+        }
     }
 
     public void raftCollision(double raftWidth,
@@ -118,5 +130,19 @@ public class Ball extends ImageView {
     public int getStrengthMultiplier() {
         return this.strengthMultiplier;
     }
+
+    public void toggleStrengthMultiplier() {
+        if (this.strengthMultiplier == 1) {
+            this.strengthMultiplier = 2;
+            setImage(multiplied);
+            this.multiplierCountdown = 1000;
+        }
+        else {
+            this.strengthMultiplier = 1;
+            setImage(original);
+            this.multiplierCountdown = -1;
+        }
+    }
+
 
 }

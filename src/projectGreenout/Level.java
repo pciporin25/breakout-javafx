@@ -114,8 +114,9 @@ public class Level {
         return this.sceneRoot;
     }
 
-    public void step(double elapsedTime) {
-        checkBrickCollisions();
+    public void step(double elapsedTime, Raft myRaft, Ball myBall) {
+        checkBrickCollisions(myRaft, myBall);
+
         if (this.activePowerUp!=null) {
             boolean shouldDestroy = activePowerUp.step(elapsedTime, this.getScene().getHeight());
             if (shouldDestroy) {
@@ -123,12 +124,13 @@ public class Level {
                 this.activePowerUp = null;
             }
         }
+
         if (this.bricksRemaining.get() == 0) {
             this.isLevelCleared = true;
         }
     }
 
-    private void checkBrickCollisions() {
+    private void checkBrickCollisions(Raft myRaft, Ball myBall) {
         for (int row=0; row<bricks.length; row++) {
             for (int col=0; col<bricks[row].length; col++) {
                 GreenhouseGas brick = bricks[row][col];
@@ -137,18 +139,26 @@ public class Level {
                     sceneRoot.getChildren().remove(brick);
                     bricks[row][col] = null;
                     bricksRemaining.set(bricksRemaining.get() - 1);
-                    if (activePowerUp==null) {
-                        activePowerUp = new PowerUp(brick.getX(), brick.getY(), 30);
-                        sceneRoot.getChildren().add(activePowerUp);
-                    }
+                    generatePowerUp(brick.getX(), brick.getY(), 30, myRaft, myBall);
                 }
             }
         }
     }
 
-    public void handleKeyInput(KeyCode code) {
+    private void generatePowerUp(double startX, double startY, double speedY, Raft myRaft, Ball myBall) {
+        if (activePowerUp==null) {
+            activePowerUp = new PowerUp(startX, startY, speedY, myRaft, myBall);
+            sceneRoot.getChildren().add(activePowerUp);
+        }
+    }
+
+    //Level-specific cheat codes
+    public void handleKeyInput(KeyCode code, Raft myRaft, Ball myBall) {
         if (code == KeyCode.C) {
             clearLevel();
+        }
+        if (code == KeyCode.P) {
+            generatePowerUp(bricks[1][1].getX(), bricks[1][1].getY(), 30, myRaft, myBall);
         }
     }
 

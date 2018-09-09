@@ -56,44 +56,24 @@ public class BreakoutGameManager extends Application
         var root = new AnchorPane();
 
         // create a place to see the shapes
-        var scene = new Scene(root, width, height, new ImagePattern(background));
+        //var scene = new Scene(root, width, height, new ImagePattern(background));
 
         var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
         myBall = new Ball(image, 1, 1);
 
         image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
         myRaft = new Raft(image);
-        root.setBottomAnchor(myRaft, 0.0);
 
-        initializeBricks(root);
+        double brickProbs[] = {0.75, 0.2, 0.05};
+        Level myLevel = new Level(root, background, myBall, myRaft, brickProbs);
 
-        // order added to the group is the order in which they are drawn
-        root.getChildren().add(myBall);
-        root.getChildren().add(myRaft);
 
         // respond to input
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        myLevel.getScene().setOnKeyPressed(e -> handleKeyInput(e.getCode()));
 
-        return scene;
+        return myLevel.getScene();
     }
 
-    //move to Level class
-    private void initializeBricks(AnchorPane root) {
-        var leftCoordinate = 0.0;
-        GreenhouseGas brick;
-
-        for (int numRows = 0; numRows < 3; numRows++) {
-            while (leftCoordinate <= SCENE_SIZE) {
-                brick = new CO2();
-                root.getChildren().add(brick);
-                brick.setX(leftCoordinate);
-                brick.setY(numRows*brick.getLayoutBounds().getHeight());
-                leftCoordinate += brick.getLayoutBounds().getWidth();
-            }
-            leftCoordinate = 0;
-        }
-
-    }
 
     // Change properties of shapes to animate them
     private void step(double elapsedTime) {

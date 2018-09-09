@@ -65,18 +65,34 @@ public class BreakoutGameManager extends Application
         myRaft = new Raft(image);
         root.setBottomAnchor(myRaft, 0.0);
 
+        initializeBricks(root);
+
         // order added to the group is the order in which they are drawn
         root.getChildren().add(myBall);
         root.getChildren().add(myRaft);
-
-
-        //var brick = new N2O();
-        //root.getChildren().add(brick);
 
         // respond to input
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
 
         return scene;
+    }
+
+    //move to Level class
+    private void initializeBricks(AnchorPane root) {
+        var leftCoordinate = 0.0;
+        GreenhouseGas brick;
+
+        for (int numRows = 0; numRows < 3; numRows++) {
+            while (leftCoordinate <= SCENE_SIZE) {
+                brick = new CO2();
+                root.getChildren().add(brick);
+                brick.setX(leftCoordinate);
+                brick.setY(numRows*brick.getLayoutBounds().getHeight());
+                leftCoordinate += brick.getLayoutBounds().getWidth();
+            }
+            leftCoordinate = 0;
+        }
+
     }
 
     // Change properties of shapes to animate them

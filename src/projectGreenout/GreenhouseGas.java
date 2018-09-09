@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 public abstract class GreenhouseGas extends ImageView {
 
     protected Ball sceneBall;
+    protected int hitsRemaining;
 
     public GreenhouseGas(Image image) {
         super(image);
@@ -17,9 +18,11 @@ public abstract class GreenhouseGas extends ImageView {
                     this.getX(),
                     this.getLayoutBounds().getHeight(),
                     this.getY());
-            return true;
+            return this.hitAndDestroy();
         }
         return false;
     }
+
+    public abstract boolean hitAndDestroy();
 
 }

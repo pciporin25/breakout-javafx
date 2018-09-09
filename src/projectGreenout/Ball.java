@@ -2,6 +2,7 @@ package projectGreenout;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 
 public class Ball extends ImageView {
 
@@ -9,9 +10,12 @@ public class Ball extends ImageView {
     private double height;
     private double directionX;
     private double directionY;
+    private boolean outOfPlay;
 
     public Ball(Image image, double myDirectionX, double myDirectionY) {
         super(image);
+        this.outOfPlay = false;
+
         this.width = image.getWidth();
         this.height = image.getHeight();
 
@@ -23,7 +27,8 @@ public class Ball extends ImageView {
         if (this.getX() + this.width > sceneWidth || this.getX() < 0) {
             this.directionX *= -1;
         }
-        if (this.getY() + this.height > sceneHeight || this.getY() < 0) {
+
+        if (this.getY() < 0) {
             this.directionY *= -1;
         }
 
@@ -81,6 +86,24 @@ public class Ball extends ImageView {
         else {
             this.directionX = -1;
         }
+    }
+
+    public void resetBall() {
+        this.setY(0);
+        this.setX(0);
+        this.directionX = 0;
+        this.directionY = 0;
+        this.outOfPlay = true;
+    }
+
+    public void handleKeyInput (KeyCode code) {
+        //check if raft is in bounds before processing movement
+        if (code == KeyCode.SPACE && this.outOfPlay == true) {
+            this.outOfPlay = false;
+            this.directionX = 1;
+            this.directionY = 1;
+        }
+
     }
 
 }

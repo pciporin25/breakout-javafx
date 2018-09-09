@@ -1,9 +1,7 @@
 package projectGreenout;
 
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.ImagePattern;
 import java.lang.Math;
 
 public class Level {
@@ -18,6 +16,9 @@ public class Level {
     private double n2oprob;
     private double ch4prob;
 
+    private int bricksRemaining;
+    private int timeRemaining;
+
     private double satelliteProb;
     private double powerupProb;
 
@@ -27,11 +28,9 @@ public class Level {
                  Ball ball,
                  Raft raft,
                  double brickProbs[]) {
-        //Set up scene root as global variable for this level
-        this.sceneRoot = root;
-        this.levelScene = myScene;
-        this.levelBall = ball;
-        this.levelRaft = raft;
+
+        //Set up scene before generating bricks
+        setupScene(root, myScene, ball, raft);
 
         //Set brick generation probabilities and populate bricks array
         try {
@@ -45,9 +44,18 @@ public class Level {
         this.bricks = initializeBricks();
     }
 
+    private void setupScene(AnchorPane root, Scene myScene, Ball ball, Raft raft) {
+        this.sceneRoot = root;
+        this.levelScene = myScene;
+        this.levelBall = ball;
+        this.levelRaft = raft;
+
+
+    }
+
 
     private GreenhouseGas[][] initializeBricks() {
-        GreenhouseGas toPopulate[][] = new GreenhouseGas[3][10];
+        GreenhouseGas toPopulate[][] = new GreenhouseGas[3][8];
 
         for (int row=0; row<toPopulate.length; row++) {
             for (int col=0; col<toPopulate[row].length; col++) {
@@ -71,7 +79,7 @@ public class Level {
                 }
 
                 //Align bricks according to position within array
-                toAdd.setX(col * toAdd.getLayoutBounds().getWidth());
+                toAdd.setX((col + 1) * toAdd.getLayoutBounds().getWidth());
                 toAdd.setY(row * toAdd.getLayoutBounds().getHeight());
             }
         }

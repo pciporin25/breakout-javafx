@@ -3,6 +3,11 @@ package projectGreenout;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -11,8 +16,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.security.Key;
 
 public class BreakoutGameManager extends Application
 {
@@ -31,6 +39,10 @@ public class BreakoutGameManager extends Application
     private Ball myBall;
     private Raft myRaft;
     private Level myLevel;
+
+    private LongProperty livesRemaining = new SimpleLongProperty(3);
+    private Text livesRemainingText;
+    private boolean isGameOver = false;
 
     public static void main(String[] args)
     {
@@ -69,13 +81,19 @@ public class BreakoutGameManager extends Application
         root.getChildren().add(myRaft);
         root.setBottomAnchor(myRaft, 0.0);
 
+        this.livesRemainingText = new Text("Lives Remaining: " + livesRemaining);
+        root.getChildren().add(livesRemainingText);
+        root.setTopAnchor(livesRemainingText, 0.0);
+        //https://stackoverflow.com/questions/34514694/display-variable-value-in-text-javafx
+        livesRemainingText.textProperty().bind(Bindings.createStringBinding(() -> "Lives Remaining: " + livesRemaining.get(), livesRemaining));
+
         Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT, new ImagePattern(background));
         double brickProbs[] = {0.75, 0.2, 0.05};
+        //create level with bricks, text, etc.
         this.myLevel = new Level(root, scene, myBall, myRaft, brickProbs);
 
-
         // respond to input
-        scene.setOnKeyPressed(e -> myRaft.handleKeyInput(e.getCode(), myScene.getWidth()));
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
 
         return scene;
     }
@@ -86,6 +104,19 @@ public class BreakoutGameManager extends Application
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
         myRaft.step();
         myLevel.step();
+
+        if (myBall.getY() > myScene.getHeight()) {
+            livesRemaining.set(livesRemaining.get() - 1);
+            myBall.resetBall();
+        }
+        if (livesRemaining.get() <= 0) {
+            this.isGameOver = true;
+        }
+    }
+
+    public void handleKeyInput(KeyCode code) {
+        myRaft.handleKeyInput(code, myScene.getWidth());
+        myBall.handleKeyInput(code);
     }
 
 }

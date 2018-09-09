@@ -46,6 +46,7 @@ resting on the floor).  I believe this is a substantial edition because it puts 
 upside down.
 
 GameManager:
+-lives remaining
 
 Levels:
 -Percentage probability for each type of brick
@@ -53,5 +54,4 @@ Levels:
 -Percentage probability of power-ups
 -Background image
 -Satellite probability
--lives remaining
 -timer

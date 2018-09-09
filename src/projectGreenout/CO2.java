@@ -14,4 +14,8 @@ public class CO2 extends GreenhouseGas {
         return image;
     }
 
+    @Override
+    public boolean hitAndDestroy() {
+        return true;
+    }
 }

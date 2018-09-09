@@ -4,8 +4,9 @@ import javafx.scene.image.Image;
 
 public class CO2 extends GreenhouseGas {
 
-    public CO2() {
+    public CO2(Ball ball) {
         super(loadImage());
+        this.sceneBall = ball;
     }
 
     private static Image loadImage() {

@@ -8,23 +8,30 @@ import java.lang.Math;
 
 public class Level {
 
-    public static final int SCENE_SIZE = 500;
-
     private AnchorPane sceneRoot;
     private Scene levelScene;
+    private Ball levelBall;
+    private Raft levelRaft;
 
     private GreenhouseGas[][] bricks;
     private double co2prob;
-    private double ch4prob;
     private double n2oprob;
+    private double ch4prob;
 
     private double satelliteProb;
     private double powerupProb;
 
 
-    public Level(AnchorPane root, Image myBackgroundImage, Ball ball, Raft raft, double brickProbs[]) {
+    public Level(AnchorPane root,
+                 Scene myScene,
+                 Ball ball,
+                 Raft raft,
+                 double brickProbs[]) {
         //Set up scene root as global variable for this level
         this.sceneRoot = root;
+        this.levelScene = myScene;
+        this.levelBall = ball;
+        this.levelRaft = raft;
 
         //Set brick generation probabilities and populate bricks array
         try {
@@ -36,22 +43,11 @@ public class Level {
             System.err.println("Caught exception while loading brick probabilities: " + e.getMessage());
         }
         this.bricks = initializeBricks();
-
-        //Generate scene
-        this.levelScene = setupLevel(myBackgroundImage, ball, raft);
     }
 
-    private Scene setupLevel(Image myBackgroundImage, Ball ball, Raft raft) {
-        sceneRoot.getChildren().add(ball);
-        sceneRoot.getChildren().add(raft);
-        sceneRoot.setBottomAnchor(raft, 0.0);
-
-        ImagePattern backgroundImage = new ImagePattern(myBackgroundImage);
-        return new Scene(sceneRoot, SCENE_SIZE, SCENE_SIZE, backgroundImage);
-    }
 
     private GreenhouseGas[][] initializeBricks() {
-        GreenhouseGas toPopulate[][] = new GreenhouseGas[3][8];
+        GreenhouseGas toPopulate[][] = new GreenhouseGas[3][10];
 
         for (int row=0; row<toPopulate.length; row++) {
             for (int col=0; col<toPopulate[row].length; col++) {
@@ -59,17 +55,17 @@ public class Level {
                 GreenhouseGas toAdd;
 
                 if (brickProb > co2prob) {
-                    toAdd = new CO2();
+                    toAdd = new CO2(levelBall);
                     sceneRoot.getChildren().add(toAdd);
                     toPopulate[row][col] = toAdd;
                 }
                 else if (brickProb > n2oprob) {
-                    toAdd = new N2O();
+                    toAdd = new N2O(levelBall);
                     sceneRoot.getChildren().add(toAdd);
                     toPopulate[row][col] = toAdd;
                 }
                 else {
-                    toAdd = new CH4();
+                    toAdd = new CH4(levelBall);
                     sceneRoot.getChildren().add(toAdd);
                     toPopulate[row][col] = toAdd;
                 }
@@ -89,6 +85,23 @@ public class Level {
 
     public Scene getScene() {
         return this.levelScene;
+    }
+
+    public void step() {
+        checkBrickCollisions();
+    }
+
+    private void checkBrickCollisions() {
+        for (int row=0; row<bricks.length; row++) {
+            for (int col=0; col<bricks[row].length; col++) {
+                GreenhouseGas brick = bricks[row][col];
+
+                if (brick!=null && brick.checkForBallCollision()) {
+                    sceneRoot.getChildren().remove(brick);
+                    bricks[row][col] = null;
+                }
+            }
+        }
     }
 
 }

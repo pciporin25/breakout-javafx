@@ -19,7 +19,8 @@ public class BreakoutGameManager extends Application
     public static final String BOUNCER_IMAGE = "ball.gif";
     public static final String RAFT_IMAGE = "raft.gif";
     public static final String LEVEL1_BACKGROUND = "level1.jpg";
-    public static final int SCENE_SIZE = 500;
+    public static final int SCENE_WIDTH = 700;
+    public static final int SCENE_HEIGHT = 400;
     public static final int FRAMES_PER_SECOND = 60;
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
@@ -29,6 +30,7 @@ public class BreakoutGameManager extends Application
     private Scene myScene;
     private Ball myBall;
     private Raft myRaft;
+    private Level myLevel;
 
     public static void main(String[] args)
     {
@@ -38,7 +40,7 @@ public class BreakoutGameManager extends Application
     public void start(Stage myStage)
     {
         var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream(LEVEL1_BACKGROUND));
-        myScene = setupGame(SCENE_SIZE, SCENE_SIZE, backgroundImage);
+        myScene = setupGame(backgroundImage);
         myStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
         myStage.setScene(myScene);
         myStage.show();
@@ -51,7 +53,7 @@ public class BreakoutGameManager extends Application
         animation.play();
     }
 
-    private Scene setupGame(int width, int height, Image background) {
+    private Scene setupGame(Image background) {
         // create one top level collection to organize the things in the scene
         var root = new AnchorPane();
 
@@ -60,39 +62,30 @@ public class BreakoutGameManager extends Application
 
         var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
         myBall = new Ball(image, 1, 1);
+        root.getChildren().add(myBall);
 
         image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
-        myRaft = new Raft(image);
+        myRaft = new Raft(image, myBall);
+        root.getChildren().add(myRaft);
+        root.setBottomAnchor(myRaft, 0.0);
 
+        Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT, new ImagePattern(background));
         double brickProbs[] = {0.75, 0.2, 0.05};
-        Level myLevel = new Level(root, background, myBall, myRaft, brickProbs);
+        this.myLevel = new Level(root, scene, myBall, myRaft, brickProbs);
 
 
         // respond to input
-        myLevel.getScene().setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        scene.setOnKeyPressed(e -> myRaft.handleKeyInput(e.getCode(), myScene.getWidth()));
 
-        return myLevel.getScene();
+        return scene;
     }
 
 
     // Change properties of shapes to animate them
     private void step(double elapsedTime) {
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
-        myRaft.step(elapsedTime, RAFT_SPEED, myScene.getWidth(), myScene.getHeight());
-
-        //check for collision, and handle it if there is one
-        if (myRaft.getBoundsInParent().intersects(myBall.getBoundsInParent())) {
-            myBall.raftCollision(myRaft.getLayoutBounds().getWidth(), myRaft.getX());
-        }
+        myRaft.step();
+        myLevel.step();
     }
 
-    private void handleKeyInput (KeyCode code) {
-        //check if raft is in bounds before processing movement
-        if (code == KeyCode.RIGHT && (myRaft.getX() + myRaft.getLayoutBounds().getWidth()) < myScene.getWidth()) {
-            myRaft.setX(myRaft.getX() + RAFT_SPEED);
-        }
-        else if (code == KeyCode.LEFT && myRaft.getX() > 0) {
-            myRaft.setX(myRaft.getX() - RAFT_SPEED);
-        }
-    }
 }

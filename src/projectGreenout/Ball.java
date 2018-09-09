@@ -31,14 +31,53 @@ public class Ball extends ImageView {
         this.setY(this.getY() + speed * this.directionY * elapsedTime);
     }
 
-    public void raftCollision(double raftWidth, double raftPositionX) {
-        this.directionY = -1;
+    public void raftCollision(double raftWidth,
+                              double raftPositionX,
+                              double raftHeight,
+                              double raftPositionY) {
+        //if ball intersects with top half of raft, y direction negative (up)
+        if (this.getY() > raftPositionY + (raftHeight / 2)) {
+            this.directionY = -1;
+
+        }
+        //if ball intersects with bottom half of raft, y direction positive (down)
+        else {
+            this.directionY = 1;
+        }
+
 
         //if ball intersects with second half of raft, x direction positive
         if (this.getX() > raftPositionX + (raftWidth/2)) {
             this.directionX = 1;
         }
         //if ball intersects with first half of raft, x direction negative
+        else {
+            this.directionX = -1;
+        }
+    }
+
+    public void brickCollision(double brickWidth,
+                               double brickPositionX,
+                               double brickHeight,
+                               double brickPositionY) {
+
+        /*
+        //if ball intersects with top half of brick, y direction negative (up)
+        if (this.getY() > brickPositionY + (brickHeight / 2)) {
+            this.directionY = -1;
+        }
+        //if ball intersects with bottom half of brick, y direction positive (down)
+        else {
+            this.directionY = 1;
+        }
+        */
+        this.directionY = 1;
+
+        //if ball intersects with right half of brick, x direction postive (right)
+        if (this.getX() > brickPositionX + (brickWidth / 2)) {
+            this.directionX = 1;
+        }
+        //if ball intersects with left half of brick, x direction negative (left)
         else {
             this.directionX = -1;
         }

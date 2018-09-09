@@ -21,12 +21,14 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.security.Key;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class BreakoutGameManager extends Application
 {
     public static final String BOUNCER_IMAGE = "ball.gif";
     public static final String RAFT_IMAGE = "raft.gif";
-    public static final String LEVEL1_BACKGROUND = "level1.jpg";
     public static final int SCENE_WIDTH = 700;
     public static final int SCENE_HEIGHT = 400;
     public static final int FRAMES_PER_SECOND = 60;
@@ -36,9 +38,13 @@ public class BreakoutGameManager extends Application
     public static final int RAFT_SPEED = 10;
 
     private Scene myScene;
+    private Stage gameStage;
     private Ball myBall;
     private Raft myRaft;
     private Level myLevel;
+    private List<Level> myLevels;
+    private Iterator<Level> myLevelIterator;
+    private GameStatus myGameStatus;
 
     private LongProperty livesRemaining = new SimpleLongProperty(3);
     private Text livesRemainingText;
@@ -51,11 +57,13 @@ public class BreakoutGameManager extends Application
 
     public void start(Stage myStage)
     {
-        var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream(LEVEL1_BACKGROUND));
-        myScene = setupGame(backgroundImage);
-        myStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
-        myStage.setScene(myScene);
-        myStage.show();
+        this.gameStage = myStage;
+        this.myLevels = createLevels();
+        this.myLevelIterator = this.myLevels.iterator();
+        myScene = setupGame();
+        gameStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
+        gameStage.setScene(myScene);
+        gameStage.show();
 
         // attach "game loop" to timeline to play it
         var frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
@@ -65,37 +73,30 @@ public class BreakoutGameManager extends Application
         animation.play();
     }
 
-    private Scene setupGame(Image background) {
+    private Scene setupGame() {
         // create one top level collection to organize the things in the scene
-        var root = new AnchorPane();
+        //var root = new AnchorPane();
 
         // create a place to see the shapes
         //var scene = new Scene(root, width, height, new ImagePattern(background));
+        //Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT, new ImagePattern(background));
 
         var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
-        myBall = new Ball(image, 1, 1);
-        root.getChildren().add(myBall);
+        myBall = new Ball(image, -1, 1, SCENE_WIDTH, 0);
 
         image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
         myRaft = new Raft(image, myBall);
-        root.getChildren().add(myRaft);
-        root.setBottomAnchor(myRaft, 0.0);
 
-        this.livesRemainingText = new Text("Lives Remaining: " + livesRemaining);
-        root.getChildren().add(livesRemainingText);
-        root.setTopAnchor(livesRemainingText, 0.0);
-        //https://stackoverflow.com/questions/34514694/display-variable-value-in-text-javafx
-        livesRemainingText.textProperty().bind(Bindings.createStringBinding(() -> "Lives Remaining: " + livesRemaining.get(), livesRemaining));
-
-        Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT, new ImagePattern(background));
-        double brickProbs[] = {0.75, 0.2, 0.05};
+        //double brickProbs[] = {0.75, 0.2, 0.05};
         //create level with bricks, text, etc.
-        this.myLevel = new Level(root, scene, myBall, myRaft, brickProbs);
+        //this.myLevel = new Level(root, scene, myBall, myRaft, brickProbs);
+        this.myLevel = getNextLevel();
+        this.myGameStatus = new GameStatus(myLevel.getSceneRoot(), livesRemaining, myLevel.getBricksRemaining());
 
         // respond to input
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        myLevel.getScene().setOnKeyPressed(e -> handleKeyInput(e.getCode()));
 
-        return scene;
+        return myLevel.getScene();
     }
 
 
@@ -112,11 +113,47 @@ public class BreakoutGameManager extends Application
         if (livesRemaining.get() <= 0) {
             this.isGameOver = true;
         }
+
+        if (myLevel.getIsLevelCleared()) {
+            this.gameStage.setScene(setupGame());
+        }
     }
+
+    private List<Level> createLevels() {
+        List<Level> myLevels = new ArrayList<>();
+
+        //create level 1
+        var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level1.jpg"));
+        double[] level1Probs = {0.75, 0.2, 0.05};
+        Level level1 = new Level(backgroundImage, level1Probs);
+        myLevels.add(level1);
+
+
+        //create level 2
+        backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level2.jpg"));
+        double[] level2Probs = {0.5, 0.3, 0.2};
+        Level level2 = new Level(backgroundImage, level2Probs);
+        myLevels.add(level2);
+
+
+        return myLevels;
+    }
+
+    private Level getNextLevel() {
+
+        Level nextLevel = this.myLevelIterator.next();
+        nextLevel.getSceneRoot().getChildren().add(myRaft);
+        nextLevel.getSceneRoot().getChildren().add(myBall);
+        nextLevel.getSceneRoot().setBottomAnchor(myRaft, 0.0);
+        nextLevel.initializeBricks(myBall);
+        return nextLevel;
+    }
+
 
     public void handleKeyInput(KeyCode code) {
         myRaft.handleKeyInput(code, myScene.getWidth());
         myBall.handleKeyInput(code);
+        myLevel.handleKeyInput(code);
     }
 
 }

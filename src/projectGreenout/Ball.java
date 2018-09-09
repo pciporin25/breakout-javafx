@@ -11,8 +11,10 @@ public class Ball extends ImageView {
     private double directionX;
     private double directionY;
     private boolean outOfPlay;
+    private double startPosX;
+    private double startPosY;
 
-    public Ball(Image image, double myDirectionX, double myDirectionY) {
+    public Ball(Image image, double myDirectionX, double myDirectionY, double posX, double posY) {
         super(image);
         this.outOfPlay = false;
 
@@ -21,6 +23,11 @@ public class Ball extends ImageView {
 
         this.directionX = myDirectionX;
         this.directionY = myDirectionY;
+
+        this.startPosX = posX - this.width;
+        this.startPosY = posY;
+        this.setX(startPosX);
+        this.setY(startPosY);
     }
 
     public void step(double elapsedTime, int speed, double sceneWidth, double sceneHeight) {
@@ -89,8 +96,8 @@ public class Ball extends ImageView {
     }
 
     public void resetBall() {
-        this.setY(0);
-        this.setX(0);
+        this.setY(startPosY);
+        this.setX(startPosX);
         this.directionX = 0;
         this.directionY = 0;
         this.outOfPlay = true;

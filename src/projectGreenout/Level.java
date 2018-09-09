@@ -1,36 +1,43 @@
 package projectGreenout;
 
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.ImagePattern;
+
 import java.lang.Math;
+
+import static projectGreenout.BreakoutGameManager.BOUNCER_IMAGE;
+import static projectGreenout.BreakoutGameManager.RAFT_IMAGE;
+import static projectGreenout.BreakoutGameManager.SCENE_WIDTH;
 
 public class Level {
 
     private AnchorPane sceneRoot;
-    private Scene levelScene;
-    private Ball levelBall;
-    private Raft levelRaft;
+    public Scene levelScene;
 
     private GreenhouseGas[][] bricks;
     private double co2prob;
     private double n2oprob;
     private double ch4prob;
 
-    private int bricksRemaining;
+    private LongProperty bricksRemaining;
     private int timeRemaining;
 
     private double satelliteProb;
     private double powerupProb;
 
+    private boolean isLevelCleared = false;
 
-    public Level(AnchorPane root,
-                 Scene myScene,
-                 Ball ball,
-                 Raft raft,
+
+    public Level(Image backgroundImage,
                  double brickProbs[]) {
 
         //Set up scene before generating bricks
-        setupScene(root, myScene, ball, raft);
+        setupScene(backgroundImage);
 
         //Set brick generation probabilities and populate bricks array
         try {
@@ -41,21 +48,30 @@ public class Level {
         catch (Exception e) {
             System.err.println("Caught exception while loading brick probabilities: " + e.getMessage());
         }
-        this.bricks = initializeBricks();
+        //this.bricks = initializeBricks();
     }
 
-    private void setupScene(AnchorPane root, Scene myScene, Ball ball, Raft raft) {
-        this.sceneRoot = root;
-        this.levelScene = myScene;
-        this.levelBall = ball;
-        this.levelRaft = raft;
+    private void setupScene(Image backgroundImage) {
+        this.sceneRoot = new AnchorPane();
 
+        //this.levelBall = ball;
+        //this.levelRaft = raft;
 
+        //this.levelBall = ball;
+        //sceneRoot.getChildren().add(levelBall);
+        //System.out.println(this.levelBall);
+
+        //this.levelRaft = raft;
+        //sceneRoot.getChildren().add(levelRaft);
+        //sceneRoot.setBottomAnchor(levelRaft, 0.0);
+
+        this.levelScene = new Scene(sceneRoot, SCENE_WIDTH, BreakoutGameManager.SCENE_HEIGHT, new ImagePattern(backgroundImage));
     }
 
 
-    private GreenhouseGas[][] initializeBricks() {
+    public void initializeBricks(Ball levelBall) {
         GreenhouseGas toPopulate[][] = new GreenhouseGas[3][8];
+        long numBricks = 0;
 
         for (int row=0; row<toPopulate.length; row++) {
             for (int col=0; col<toPopulate[row].length; col++) {
@@ -79,24 +95,42 @@ public class Level {
                 }
 
                 //Align bricks according to position within array
-                toAdd.setX((col + 1) * toAdd.getLayoutBounds().getWidth());
+                toAdd.setX(col * toAdd.getLayoutBounds().getWidth());
                 toAdd.setY(row * toAdd.getLayoutBounds().getHeight());
+
+                //increment brick counter
+                numBricks++;
             }
         }
-
-        return toPopulate;
+        this.bricksRemaining = new SimpleLongProperty(numBricks);
+        this.bricks = toPopulate;
     }
 
     public GreenhouseGas[][] getBricks() {
         return this.bricks;
     }
 
+    public LongProperty getBricksRemaining() {
+        return this.bricksRemaining;
+    }
+
+    public boolean getIsLevelCleared() {
+        return this.isLevelCleared;
+    }
+
     public Scene getScene() {
         return this.levelScene;
     }
 
+    public AnchorPane getSceneRoot() {
+        return this.sceneRoot;
+    }
+
     public void step() {
         checkBrickCollisions();
+        if (this.bricksRemaining.get() == 0) {
+            this.isLevelCleared = true;
+        }
     }
 
     private void checkBrickCollisions() {
@@ -107,9 +141,27 @@ public class Level {
                 if (brick!=null && brick.checkForBallCollision()) {
                     sceneRoot.getChildren().remove(brick);
                     bricks[row][col] = null;
+                    bricksRemaining.set(bricksRemaining.get() - 1);
                 }
             }
         }
+    }
+
+    public void handleKeyInput(KeyCode code) {
+        if (code == KeyCode.C) {
+            clearLevel();
+        }
+    }
+
+    private void clearLevel() {
+        for (int row=0; row<bricks.length; row++) {
+            for (int col=0; col<bricks[row].length; col++) {
+                GreenhouseGas brick = bricks[row][col];
+                 sceneRoot.getChildren().remove(brick);
+                 bricks[row][col] = null;
+            }
+        }
+        this.bricksRemaining.set(0);
     }
 
 }

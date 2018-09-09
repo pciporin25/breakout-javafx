@@ -11,8 +11,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
@@ -37,6 +40,8 @@ public class BreakoutGameManager extends Application
     public static final int BALL_SPEED = 60;
     public static final int RAFT_SPEED = 10;
 
+    private Pane splashLayout;
+
     private Scene myScene;
     private Stage gameStage;
     private Ball myBall;
@@ -56,14 +61,29 @@ public class BreakoutGameManager extends Application
         launch(args);
     }
 
+    @Override
+    public void init() {
+        ImageView splashView = new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("splash.jpeg")));
+        this.splashLayout = new VBox();
+        splashLayout.getChildren().add(splashView);
+    }
+
     public void start(Stage myStage)
     {
         this.gameStage = myStage;
         this.myLevels = createLevels();
         this.myLevelIterator = this.myLevels.iterator();
+        myScene = new Scene(splashLayout);
 
-        myScene = setupLevel();
+        //myScene = setupLevel();
         gameStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
+        gameStage.setScene(myScene);
+        gameStage.show();
+        myScene.setOnKeyPressed(e -> startGame());
+    }
+
+    private void startGame() {
+        this.myScene = setupLevel();
         gameStage.setScene(myScene);
         gameStage.show();
 

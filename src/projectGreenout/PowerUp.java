@@ -76,7 +76,7 @@ public class PowerUp extends ImageView {
         }
         //faster paddle
         else {
-
+            this.sceneRaft.toggleSpeedMultiplier();
         }
     }
 }

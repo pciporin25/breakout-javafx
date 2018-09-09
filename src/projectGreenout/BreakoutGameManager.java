@@ -108,6 +108,7 @@ public class BreakoutGameManager extends Application
         }
         if (myExtraBall!=null && myExtraBall.getY() > myScene.getHeight()) {
             myLevel.setIsExtraBall(false);
+            this.myExtraBall = null;
         }
 
         if (livesRemaining.get() <= 0) {

@@ -130,14 +130,14 @@ public class BreakoutGameManager extends Application
         //create level 1
         var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level1.jpg"));
         double[] level1Probs = {0.75, 0.2, 0.05};
-        Level level1 = new Level(backgroundImage, level1Probs);
+        Level level1 = new Level(backgroundImage, level1Probs, 0.5);
         myLevels.add(level1);
 
 
         //create level 2
         backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level2.jpg"));
         double[] level2Probs = {0.5, 0.3, 0.2};
-        Level level2 = new Level(backgroundImage, level2Probs);
+        Level level2 = new Level(backgroundImage, level2Probs, 1);
         myLevels.add(level2);
 
 

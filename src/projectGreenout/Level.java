@@ -34,10 +34,12 @@ public class Level {
 
 
     public Level(Image backgroundImage,
-                 double brickProbs[]) {
+                 double brickProbs[],
+                 double powerupProb) {
 
         //Set up scene before generating bricks
         setupScene(backgroundImage);
+        this.powerupProb = powerupProb;
 
         //Set brick generation probabilities and populate bricks array
         try {
@@ -155,7 +157,8 @@ public class Level {
     }
 
     private void generatePowerUp(double startX, double startY, double speedY, Raft myRaft, Ball myBall) {
-        if (activePowerUp==null) {
+        //Only generate the powerup if none are active and probability is satisfied
+        if (activePowerUp==null && Math.random() < powerupProb) {
             activePowerUp = new PowerUp(startX, startY, speedY, myRaft, myBall, this);
             sceneRoot.getChildren().add(activePowerUp);
         }

@@ -14,6 +14,8 @@ public class Ball extends ImageView {
     private double startPosX;
     private double startPosY;
 
+    private int strengthMultiplier = 1;
+
     public Ball(Image image, double myDirectionX, double myDirectionY, double posX, double posY) {
         super(image);
         this.outOfPlay = false;
@@ -111,6 +113,10 @@ public class Ball extends ImageView {
             this.directionY = 1;
         }
 
+    }
+
+    public int getStrengthMultiplier() {
+        return this.strengthMultiplier;
     }
 
 }

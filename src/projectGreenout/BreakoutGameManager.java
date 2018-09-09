@@ -60,7 +60,8 @@ public class BreakoutGameManager extends Application
         this.gameStage = myStage;
         this.myLevels = createLevels();
         this.myLevelIterator = this.myLevels.iterator();
-        myScene = setupGame();
+
+        myScene = setupLevel();
         gameStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
         gameStage.setScene(myScene);
         gameStage.show();
@@ -73,23 +74,13 @@ public class BreakoutGameManager extends Application
         animation.play();
     }
 
-    private Scene setupGame() {
-        // create one top level collection to organize the things in the scene
-        //var root = new AnchorPane();
-
-        // create a place to see the shapes
-        //var scene = new Scene(root, width, height, new ImagePattern(background));
-        //Scene scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT, new ImagePattern(background));
-
+    private Scene setupLevel() {
         var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
         myBall = new Ball(image, -1, 1, SCENE_WIDTH, 0);
 
         image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
         myRaft = new Raft(image, myBall);
 
-        //double brickProbs[] = {0.75, 0.2, 0.05};
-        //create level with bricks, text, etc.
-        //this.myLevel = new Level(root, scene, myBall, myRaft, brickProbs);
         this.myLevel = getNextLevel();
         this.myGameStatus = new GameStatus(myLevel.getSceneRoot(), livesRemaining, myLevel.getBricksRemaining());
 
@@ -104,7 +95,7 @@ public class BreakoutGameManager extends Application
     private void step(double elapsedTime) {
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
         myRaft.step();
-        myLevel.step();
+        myLevel.step(elapsedTime);
 
         if (myBall.getY() > myScene.getHeight()) {
             livesRemaining.set(livesRemaining.get() - 1);
@@ -115,7 +106,7 @@ public class BreakoutGameManager extends Application
         }
 
         if (myLevel.getIsLevelCleared()) {
-            this.gameStage.setScene(setupGame());
+            this.gameStage.setScene(setupLevel());
         }
     }
 

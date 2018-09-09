@@ -15,7 +15,8 @@ public class N2O extends GreenhouseGas {
     }
 
     public boolean hitAndDestroy() {
-        if (hitsRemaining>0) {
+        //if multiplier is greater than 1, this brick should be destroyed
+        if (sceneBall.getStrengthMultiplier()<=1 && hitsRemaining>0) {
             this.setImage(new Image (N2O.class.getClassLoader().getResourceAsStream("n2o-hit.gif")));
             hitsRemaining--;
             return false;

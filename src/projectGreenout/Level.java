@@ -10,8 +10,6 @@ import javafx.scene.paint.ImagePattern;
 
 import java.lang.Math;
 
-import static projectGreenout.BreakoutGameManager.BOUNCER_IMAGE;
-import static projectGreenout.BreakoutGameManager.RAFT_IMAGE;
 import static projectGreenout.BreakoutGameManager.SCENE_WIDTH;
 
 public class Level {
@@ -29,6 +27,7 @@ public class Level {
 
     private double satelliteProb;
     private double powerupProb;
+    private PowerUp activePowerUp;
 
     private boolean isLevelCleared = false;
 
@@ -53,17 +52,6 @@ public class Level {
 
     private void setupScene(Image backgroundImage) {
         this.sceneRoot = new AnchorPane();
-
-        //this.levelBall = ball;
-        //this.levelRaft = raft;
-
-        //this.levelBall = ball;
-        //sceneRoot.getChildren().add(levelBall);
-        //System.out.println(this.levelBall);
-
-        //this.levelRaft = raft;
-        //sceneRoot.getChildren().add(levelRaft);
-        //sceneRoot.setBottomAnchor(levelRaft, 0.0);
 
         this.levelScene = new Scene(sceneRoot, SCENE_WIDTH, BreakoutGameManager.SCENE_HEIGHT, new ImagePattern(backgroundImage));
     }
@@ -126,8 +114,15 @@ public class Level {
         return this.sceneRoot;
     }
 
-    public void step() {
+    public void step(double elapsedTime) {
         checkBrickCollisions();
+        if (this.activePowerUp!=null) {
+            boolean shouldDestroy = activePowerUp.step(elapsedTime, this.getScene().getHeight());
+            if (shouldDestroy) {
+                sceneRoot.getChildren().remove(activePowerUp);
+                this.activePowerUp = null;
+            }
+        }
         if (this.bricksRemaining.get() == 0) {
             this.isLevelCleared = true;
         }
@@ -142,6 +137,10 @@ public class Level {
                     sceneRoot.getChildren().remove(brick);
                     bricks[row][col] = null;
                     bricksRemaining.set(bricksRemaining.get() - 1);
+                    if (activePowerUp==null) {
+                        activePowerUp = new PowerUp(brick.getX(), brick.getY(), 30);
+                        sceneRoot.getChildren().add(activePowerUp);
+                    }
                 }
             }
         }

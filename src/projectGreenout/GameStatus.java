@@ -3,6 +3,7 @@ package projectGreenout;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.LongProperty;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -24,6 +25,9 @@ public class GameStatus {
         root.setTopAnchor(bricksRemainingText, 10 + livesRemainingText.getLayoutBounds().getHeight());
         root.setRightAnchor(bricksRemainingText, 10.0);
         bricksRemainingText.textProperty().bind(Bindings.createStringBinding(() -> "Bricks Remaining: " + bricksRemaining.get(), bricksRemaining));
+
+        this.livesRemainingText.setFill(Color.RED);
+        this.bricksRemainingText.setFill(Color.RED);
     }
 
 }

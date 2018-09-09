@@ -7,6 +7,7 @@ import javafx.scene.input.KeyCode;
 public class Raft extends ImageView {
 
     private Ball sceneBall;
+    private Ball extraBall;
 
     public Raft(Image image, Ball ball) {
         super(image);
@@ -16,6 +17,13 @@ public class Raft extends ImageView {
     public void step() {
         if (this.getBoundsInParent().intersects(sceneBall.getBoundsInParent())) {
             sceneBall.raftCollision(this.getLayoutBounds().getWidth(),
+                    this.getX(),
+                    this.getLayoutBounds().getHeight(),
+                    this.getY());
+        }
+
+        if (this.extraBall!=null && this.getBoundsInParent().intersects(extraBall.getBoundsInParent())) {
+            extraBall.raftCollision(this.getLayoutBounds().getWidth(),
                     this.getX(),
                     this.getLayoutBounds().getHeight(),
                     this.getY());
@@ -30,6 +38,10 @@ public class Raft extends ImageView {
         else if (code == KeyCode.LEFT && this.getX() > 0) {
             this.setX(this.getX() - BreakoutGameManager.RAFT_SPEED);
         }
+    }
+
+    public void addExtraBall(Ball ball) {
+        this.extraBall = ball;
     }
 
 }

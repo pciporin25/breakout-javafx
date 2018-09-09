@@ -40,6 +40,7 @@ public class BreakoutGameManager extends Application
     private Scene myScene;
     private Stage gameStage;
     private Ball myBall;
+    private Ball myExtraBall;
     private Raft myRaft;
     private Level myLevel;
     private List<Level> myLevels;
@@ -94,19 +95,31 @@ public class BreakoutGameManager extends Application
     // Change properties of shapes to animate them
     private void step(double elapsedTime) {
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
+        if (myExtraBall!=null) {
+            myExtraBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
+        }
         myRaft.step();
         myLevel.step(elapsedTime, myRaft, myBall);
 
+        //Only for non-extra ball
         if (myBall.getY() > myScene.getHeight()) {
             livesRemaining.set(livesRemaining.get() - 1);
             myBall.resetBall();
         }
+        if (myExtraBall!=null && myExtraBall.getY() > myScene.getHeight()) {
+            myLevel.setIsExtraBall(false);
+        }
+
         if (livesRemaining.get() <= 0) {
             this.isGameOver = true;
         }
 
         if (myLevel.getIsLevelCleared()) {
             this.gameStage.setScene(setupLevel());
+        }
+
+        if (myLevel.getIsExtraBall()) {
+            addNewBall();
         }
     }
 
@@ -145,6 +158,22 @@ public class BreakoutGameManager extends Application
         myRaft.handleKeyInput(code, myScene.getWidth());
         myBall.handleKeyInput(code);
         myLevel.handleKeyInput(code, myRaft, myBall);
+    }
+
+    public void addNewBall() {
+        //max 2 balls at once
+        if (this.myExtraBall == null) {
+            System.out.println("extra");
+            var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
+            this.myExtraBall = new Ball(image, -1, 1, SCENE_WIDTH, 0);
+            this.myLevel.getSceneRoot().getChildren().add(myExtraBall);
+            this.myRaft.addExtraBall(myExtraBall);
+            for (GreenhouseGas[] row : this.myLevel.getBricks()) {
+                for (GreenhouseGas gas : row) {
+                    gas.addExtraBall(this.myExtraBall);
+                }
+            }
+        }
     }
 
 }

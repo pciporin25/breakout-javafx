@@ -29,6 +29,7 @@ public class Level {
     private double powerupProb;
     private PowerUp activePowerUp;
 
+    private boolean isExtraBall = false;
     private boolean isLevelCleared = false;
 
 
@@ -106,6 +107,14 @@ public class Level {
         return this.isLevelCleared;
     }
 
+    public void setIsExtraBall(boolean val) {
+        this.isExtraBall = val;
+    }
+
+    public boolean getIsExtraBall() {
+        return this.isExtraBall;
+    }
+
     public Scene getScene() {
         return this.levelScene;
     }
@@ -147,7 +156,7 @@ public class Level {
 
     private void generatePowerUp(double startX, double startY, double speedY, Raft myRaft, Ball myBall) {
         if (activePowerUp==null) {
-            activePowerUp = new PowerUp(startX, startY, speedY, myRaft, myBall);
+            activePowerUp = new PowerUp(startX, startY, speedY, myRaft, myBall, this);
             sceneRoot.getChildren().add(activePowerUp);
         }
     }

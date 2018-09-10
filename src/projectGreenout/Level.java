@@ -21,7 +21,6 @@ public class Level {
     protected GreenhouseGas[][] bricks;
     private TreeMap<String, Double> gasProbabilities;
     protected LongProperty bricksRemaining;
-    private double satelliteProb;
     private double powerupProb;
     private PowerUp activePowerUp;
     private double raftScale;

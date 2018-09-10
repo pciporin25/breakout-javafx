@@ -3,7 +3,7 @@ game
 
 This project implements the game of Breakout.
 
-Name: Peter Ciporin
+Name: Peter Ciporin (pbc9)
 
 ### Timeline
 
@@ -48,6 +48,9 @@ While I implemented nearly everything I mentioned in my plan, I will note a few 
  * While the paddle cannot jump in the air (which would have been rather useless), instead you can jump it from side to side across the screen
  * I decided against including a timer in my game since I believed it would be extraneous, and so any mention of that in my plan was not implemented
  * I did not implement the musical cheat key, since it has no use for debugging
+ 
+ Additionally, given that the responsibilities of my Level and BreakoutGameManager classes are similar, I probably could have combined much of the code into one location rather 
+ than distributing it between the two classes.
 
 ### Impressions
 Overall, I found this project challenging but rewarding.  While in hindsight I wish I mad made some alternative architectural decisions (i.e. having my 

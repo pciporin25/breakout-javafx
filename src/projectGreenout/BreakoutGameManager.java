@@ -24,10 +24,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.security.Key;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class BreakoutGameManager extends Application
 {
@@ -112,9 +109,27 @@ public class BreakoutGameManager extends Application
         return myLevel.getScene();
     }
 
+    private void gameOver() {
+        ImageView gameOverView = new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("secret-level.jpg")));
+        this.splashLayout = new VBox();
+        splashLayout.getChildren().add(gameOverView);
+        Scene gameOverScene = new Scene(splashLayout);
+        gameStage.setScene(gameOverScene);
+    }
+
 
     // Change properties of shapes to animate them
     private void step(double elapsedTime) {
+
+        if (livesRemaining.get() <= 0 || this.isGameOver) {
+            this.isGameOver = true;
+            gameOver();
+        }
+        else if (myLevel.getIsLevelCleared()) {
+            this.gameStage.setScene(setupLevel());
+        }
+
+
         myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
         if (myExtraBall!=null) {
             myExtraBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
@@ -132,14 +147,6 @@ public class BreakoutGameManager extends Application
             this.myExtraBall = null;
         }
 
-        if (livesRemaining.get() <= 0) {
-            this.isGameOver = true;
-        }
-
-        if (myLevel.getIsLevelCleared()) {
-            this.gameStage.setScene(setupLevel());
-        }
-
         if (myLevel.getIsExtraBall()) {
             addNewBall();
         }
@@ -150,22 +157,52 @@ public class BreakoutGameManager extends Application
 
         //create level 1
         var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level1.jpg"));
-        double[] level1Probs = {0.75, 0.2, 0.05};
+        TreeMap<String, Double> level1Probs = generateMap(0.8, 0.15, 0.05);
         Level level1 = new Level(backgroundImage, level1Probs, 0.5, 1);
         myLevels.add(level1);
 
-
         //create level 2
         backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level2.jpg"));
-        double[] level2Probs = {0.5, 0.3, 0.2};
-        Level level2 = new Level(backgroundImage, level2Probs, 1, 0.5);
+        TreeMap<String, Double> level2Probs = generateMap(0.6, 0.2, 0.2);
+        Level level2 = new Level(backgroundImage, level2Probs, 1, 0.9);
         myLevels.add(level2);
 
+        //create level 3
+        backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level3.jpg"));
+        TreeMap<String, Double> level3Probs = generateMap(0.3, 0.4, 0.3);
+        Level level3 = new Level(backgroundImage, level3Probs, 1, 0.8);
+        myLevels.add(level3);
+
+        //create level 4
+        backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level4.jpg"));
+        TreeMap<String, Double> level4Probs = generateMap(0.25, 0.35, 0.4);
+        Level level4 = new Level(backgroundImage, level4Probs, 1, 0.7);
+        myLevels.add(level4);
+
+        //create level 5
+        backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level5.jpg"));
+        TreeMap<String, Double> level5Probs = generateMap(0.1, 0.4, 0.5);
+        Level level5 = new Level(backgroundImage, level5Probs, 1, 0.6);
+        myLevels.add(level5);
 
         return myLevels;
     }
 
+    private TreeMap<String, Double> generateMap(double co2, double n2o, double ch4) {
+        TreeMap<String, Double> myMap = new TreeMap<>();
+        myMap.put("co2", co2);
+        myMap.put("n2o", n2o);
+        myMap.put("ch4", ch4);
+        return myMap;
+    }
+
     private Level getNextLevel() {
+        //check if game is over
+        if (!this.myLevelIterator.hasNext()) {
+            this.isGameOver = true;
+            return null;
+        }
+
         Level nextLevel = this.myLevelIterator.next();
         myRaft.setScaleX(nextLevel.getRaftScale());
         myRaft.setScaleY(nextLevel.getRaftScale());

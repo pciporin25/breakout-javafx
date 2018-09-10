@@ -9,6 +9,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.ImagePattern;
 
 import java.lang.Math;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static projectGreenout.BreakoutGameManager.SCENE_WIDTH;
 
@@ -18,6 +20,7 @@ public class Level {
     public Scene levelScene;
 
     private GreenhouseGas[][] bricks;
+    private TreeMap<String, Double> gasProbabilities;
     private double co2prob;
     private double n2oprob;
     private double ch4prob;
@@ -35,7 +38,7 @@ public class Level {
 
 
     public Level(Image backgroundImage,
-                 double brickProbs[],
+                 TreeMap<String, Double> brickProbs,
                  double powerupProb,
                  double raftScale) {
 
@@ -45,6 +48,7 @@ public class Level {
         this.raftScale = raftScale;
 
         //Set brick generation probabilities and populate bricks array
+        /*
         try {
             this.co2prob = brickProbs[0];
             this.ch4prob = brickProbs[1];
@@ -53,7 +57,10 @@ public class Level {
         catch (Exception e) {
             System.err.println("Caught exception while loading brick probabilities: " + e.getMessage());
         }
+        */
         //this.bricks = initializeBricks();
+
+        this.gasProbabilities = brickProbs;
     }
 
     private void setupScene(Image backgroundImage) {
@@ -66,24 +73,28 @@ public class Level {
     public void initializeBricks(Ball levelBall) {
         GreenhouseGas toPopulate[][] = new GreenhouseGas[3][8];
         long numBricks = 0;
+        var minProb = this.gasProbabilities.pollFirstEntry();
+        var secondSmallest = this.gasProbabilities.pollFirstEntry();
+        var largest = this.gasProbabilities.pollLastEntry();
 
         for (int row=0; row<toPopulate.length; row++) {
             for (int col=0; col<toPopulate[row].length; col++) {
                 double brickProb = Math.random();
                 GreenhouseGas toAdd;
 
-                if (brickProb > co2prob) {
-                    toAdd = new CO2(levelBall);
+                if (brickProb <= minProb.getValue()) {
+                    toAdd = getGas(minProb, levelBall);
                     sceneRoot.getChildren().add(toAdd);
                     toPopulate[row][col] = toAdd;
                 }
-                else if (brickProb > n2oprob) {
-                    toAdd = new N2O(levelBall);
+
+                else if (brickProb <= secondSmallest.getValue()) {
+                    toAdd = getGas(secondSmallest, levelBall);
                     sceneRoot.getChildren().add(toAdd);
                     toPopulate[row][col] = toAdd;
                 }
                 else {
-                    toAdd = new CH4(levelBall);
+                    toAdd = getGas(largest, levelBall);
                     sceneRoot.getChildren().add(toAdd);
                     toPopulate[row][col] = toAdd;
                 }
@@ -98,6 +109,18 @@ public class Level {
         }
         this.bricksRemaining = new SimpleLongProperty(numBricks);
         this.bricks = toPopulate;
+    }
+
+    private GreenhouseGas getGas(Map.Entry<String, Double> type, Ball myBall) {
+        switch (type.getKey()) {
+            case "co2":
+                return new CO2(myBall);
+            case "n2o":
+                return new N2O(myBall);
+            case "ch4":
+            default:
+                return new CH4(myBall);
+        }
     }
 
     public GreenhouseGas[][] getBricks() {

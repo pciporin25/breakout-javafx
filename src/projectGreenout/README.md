@@ -7,5 +7,7 @@ https://pixabay.com/en/arctic-ice-floating-iceberg-water-1031106/
 https://pixabay.com/en/mountains-ice-bergs-antarctica-berg-482689/
 https://pixabay.com/en/underwater-blue-ocean-sea-diving-802092/
 
+https://stackoverflow.com/questions/34514694/display-variable-value-in-text-javafx
+
 Tutorial for splash screen:
 https://gist.github.com/jewelsea/1588531

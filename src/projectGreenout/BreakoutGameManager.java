@@ -37,9 +37,9 @@ public class BreakoutGameManager extends Application
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final int BALL_SPEED = 60;
     public static final int RAFT_SPEED = 20;
+    public static final int POWER_UP_SPEED = 30;
 
     private Pane splashLayout;
-
     private Scene myScene;
     private Stage gameStage;
     private Ball myBall;
@@ -51,7 +51,6 @@ public class BreakoutGameManager extends Application
     private GameStatus myGameStatus;
 
     private LongProperty livesRemaining = new SimpleLongProperty(3);
-    private Text livesRemainingText;
     private boolean isGameOver = false;
     private boolean startedSecretLevel = false;
 
@@ -62,6 +61,7 @@ public class BreakoutGameManager extends Application
 
     @Override
     public void init() {
+        //Load splash view for instructions
         ImageView splashView = new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("splash.jpeg")));
         this.splashLayout = new VBox();
         splashLayout.getChildren().add(splashView);
@@ -74,92 +74,15 @@ public class BreakoutGameManager extends Application
         this.myLevelIterator = this.myLevels.iterator();
         myScene = new Scene(splashLayout);
 
-        //myScene = setupLevel();
         gameStage.setTitle("Project GREENOUT: Greenhouse Gas Elimination");
         gameStage.setScene(myScene);
         gameStage.show();
+
+        //Set listener to start the game once any button is pressed on splash view
         myScene.setOnKeyPressed(e -> startGame());
     }
 
-    private void startGame() {
-        this.myScene = setupLevel();
-        gameStage.setScene(myScene);
-        gameStage.show();
 
-        // attach "game loop" to timeline to play it
-        var frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
-        var animation = new Timeline();
-        animation.setCycleCount(Timeline.INDEFINITE);
-        animation.getKeyFrames().add(frame);
-        animation.play();
-    }
-
-    private Scene setupLevel() {
-        var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
-        myBall = new Ball(image, -1, 1, SCENE_WIDTH, 0, isGameOver);
-
-        image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
-        myRaft = new Raft(image, myBall);
-
-        this.myLevel = getNextLevel();
-        if (!isGameOver) {
-            this.myGameStatus = new GameStatus(myLevel.getSceneRoot(), livesRemaining, myLevel.getBricksRemaining());
-        }
-
-        // respond to input
-        myLevel.getScene().setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-
-        return myLevel.getScene();
-    }
-
-    private void gameOver() {
-        this.gameStage.setScene(setupLevel());
-        this.myLevel.getScene().setOnMouseClicked(e -> showSecretLevel());
-    }
-
-    private void showSecretLevel() {
-        myLevel.getSceneRoot().getChildren().add(myRaft);
-        myLevel.getSceneRoot().getChildren().add(myBall);
-        myLevel.getSceneRoot().setTopAnchor(myRaft, 0.0);
-        myLevel.initializeBricks(myBall);
-    }
-
-
-    // Change properties of shapes to animate them
-    private void step(double elapsedTime) {
-
-        if (livesRemaining.get() <= 0 || this.isGameOver) {
-            this.isGameOver = true;
-            if (!startedSecretLevel) {
-                gameOver();
-            }
-            this.startedSecretLevel = true;
-        }
-        else if (myLevel.getIsLevelCleared()) {
-            this.gameStage.setScene(setupLevel());
-        }
-
-
-        myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
-        if (myExtraBall!=null) {
-            myExtraBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
-        }
-        myRaft.step();
-        myLevel.step(elapsedTime, myRaft, myBall);
-
-        //Only for non-extra ball
-        if (myBall.getY() > myScene.getHeight()) {
-            livesRemaining.set(livesRemaining.get() - 1);
-        }
-        if (myExtraBall!=null && myExtraBall.getY() > myScene.getHeight()) {
-            myLevel.setIsExtraBall(false);
-            this.myExtraBall = null;
-        }
-
-        if (myLevel.getIsExtraBall()) {
-            addNewBall();
-        }
-    }
 
     private List<Level> createLevels() {
         List<Level> myLevels = new ArrayList<>();
@@ -205,8 +128,91 @@ public class BreakoutGameManager extends Application
         return myMap;
     }
 
+
+
+
+    private void startGame() {
+        //load first level
+        this.myScene = setupLevel();
+        gameStage.setScene(myScene);
+        gameStage.show();
+
+        // attach "game loop" to timeline to play it
+        var frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
+        var animation = new Timeline();
+        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.getKeyFrames().add(frame);
+        animation.play();
+    }
+
+    //this method loads the next level of the game, returning the corresponding Scene
+    private Scene setupLevel() {
+        var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
+        myBall = new Ball(image, -1, 1, SCENE_WIDTH, 0, isGameOver);
+
+        image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
+        myRaft = new Raft(image, myBall);
+
+        this.myLevel = getNextLevel();
+        if (!isGameOver) {
+            this.myGameStatus = new GameStatus(myLevel.getSceneRoot(), livesRemaining, myLevel.getBricksRemaining());
+        }
+
+        // respond to input
+        myLevel.getScene().setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+
+        return myLevel.getScene();
+    }
+
+
+    // Called at each frame of game
+    private void step(double elapsedTime) {
+        //At start of each frame, check if no lives left or if game already complete
+        if (livesRemaining.get() <= 0 || this.isGameOver) {
+            this.isGameOver = true;
+            if (!startedSecretLevel) {
+                gameOver();
+            }
+            this.startedSecretLevel = true;
+        }
+        //If game is not yet over but level is cleared, load next level
+        else if (myLevel.getIsLevelCleared()) {
+            this.gameStage.setScene(setupLevel());
+        }
+
+        //call methods for child objects
+        myBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
+        myRaft.step();
+        myLevel.step(elapsedTime, myRaft, myBall);
+
+        //if the Level class indicates that extra ball should be added, call private method
+        if (myLevel.getIsExtraBall()) {
+            addNewBall();
+        }
+        //if extra ball power-up enabled, run step method for this object too
+        if (myExtraBall!=null) {
+            myExtraBall.step(elapsedTime, BALL_SPEED, myScene.getWidth(), myScene.getHeight());
+        }
+        //when extra ball exits scene, reset global variables
+        if (myExtraBall!=null && myExtraBall.getIsOutOfPlay()) {
+            myLevel.setIsExtraBall(false);
+            myLevel.getSceneRoot().getChildren().remove(myExtraBall);
+            this.myExtraBall = null;
+        }
+
+        //When non-extra ball exits scene, decrease number of lives remaining
+        if (myBall.getY() >= myScene.getHeight()) {
+            livesRemaining.set(livesRemaining.get() - 1);
+        }
+
+
+    }
+
+
+
+
     private Level getNextLevel() {
-        //check if game is over
+        //check if game is over.  if so, load secret level (without attaching game objects yet)
         if (!this.myLevelIterator.hasNext() || this.isGameOver) {
             this.isGameOver = true;
 
@@ -227,14 +233,30 @@ public class BreakoutGameManager extends Application
         return nextLevel;
     }
 
+    private void gameOver() {
+        this.gameStage.setScene(setupLevel());
+        this.myLevel.getScene().setOnMouseClicked(e -> showSecretLevel());
+    }
 
-    public void handleKeyInput(KeyCode code) {
+    private void showSecretLevel() {
+        myLevel.getSceneRoot().getChildren().add(myRaft);
+        myLevel.getSceneRoot().getChildren().add(myBall);
+        myLevel.getSceneRoot().setTopAnchor(myRaft, 0.0);
+        myLevel.initializeBricks(myBall);
+    }
+
+
+
+
+
+
+    private void handleKeyInput(KeyCode code) {
         myRaft.handleKeyInput(code, myScene.getWidth());
         myBall.handleKeyInput(code);
         myLevel.handleKeyInput(code, myRaft, myBall);
     }
 
-    public void addNewBall() {
+    private void addNewBall() {
         //max 2 balls at once
         if (this.myExtraBall == null) {
             System.out.println("extra");
@@ -242,8 +264,12 @@ public class BreakoutGameManager extends Application
             this.myExtraBall = new Ball(image, -1, 1, SCENE_WIDTH, 0, isGameOver);
             this.myLevel.getSceneRoot().getChildren().add(myExtraBall);
             this.myRaft.addExtraBall(myExtraBall);
-            for (GreenhouseGas[] row : this.myLevel.getBricks()) {
-                for (GreenhouseGas gas : row) {
+
+            for (int i=0; i<this.myLevel.getBricks().length; i++) {
+                for (int j=0; j<this.myLevel.getBricks()[i].length; j++) {
+                    GreenhouseGas gas = this.myLevel.getBricks()[i][j];
+                    System.out.println("gas is " + gas);
+                    System.out.println("extra ball is " + this.myExtraBall);
                     gas.addExtraBall(this.myExtraBall);
                 }
             }

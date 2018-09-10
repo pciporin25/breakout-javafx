@@ -36,6 +36,7 @@ public class Ball extends ImageView {
         this.startPosX = posX - this.width;
         this.startPosY = posY;
 
+        //Ball behaves differently for secret level
         if (this.isSecretBall) {
             this.startPosY = posY + 350;
             this.directionY = myDirectionY * -1;
@@ -60,7 +61,7 @@ public class Ball extends ImageView {
         else if (this.isSecretBall && this.getY() >= sceneHeight) {
             this.directionY *= -1;
         }
-        else if (this.getY() > sceneHeight) {
+        else if (this.getY() >= sceneHeight) {
             this.resetBall();
         }
 
@@ -76,20 +77,8 @@ public class Ball extends ImageView {
     }
 
     public void raftCollision(double raftWidth,
-                              double raftPositionX,
-                              double raftHeight,
-                              double raftPositionY) {
-        /*
-        //if ball intersects with top half of raft, y direction negative (up)
-        if (this.getY() > raftPositionY + (raftHeight / 2)) {
-            this.directionY = -1;
+                              double raftPositionX) {
 
-        }
-        //if ball intersects with bottom half of raft, y direction positive (down)
-        else {
-            this.directionY = 1;
-        }
-        */
         this.directionY *= -1;
 
 
@@ -104,20 +93,8 @@ public class Ball extends ImageView {
     }
 
     public void brickCollision(double brickWidth,
-                               double brickPositionX,
-                               double brickHeight,
-                               double brickPositionY) {
+                               double brickPositionX) {
 
-        /*
-        //if ball intersects with top half of brick, y direction negative (up)
-        if (this.getY() > brickPositionY + (brickHeight / 2)) {
-            this.directionY = -1;
-        }
-        //if ball intersects with bottom half of brick, y direction positive (down)
-        else {
-            this.directionY = 1;
-        }
-        */
         this.directionY *= -1;
 
         //if ball intersects with right half of brick, x direction postive (right)
@@ -152,6 +129,10 @@ public class Ball extends ImageView {
             }
         }
 
+    }
+
+    public boolean getIsOutOfPlay() {
+        return this.outOfPlay;
     }
 
     public int getStrengthMultiplier() {

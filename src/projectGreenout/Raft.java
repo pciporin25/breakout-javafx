@@ -21,16 +21,12 @@ public class Raft extends ImageView {
     public void step() {
         if (this.getBoundsInParent().intersects(sceneBall.getBoundsInParent())) {
             sceneBall.raftCollision(this.getWidth(),
-                    this.getX(),
-                    this.getHeight(),
-                    this.getY());
+                    this.getX());
         }
 
         if (this.extraBall!=null && this.getBoundsInParent().intersects(extraBall.getBoundsInParent())) {
             extraBall.raftCollision(this.getWidth(),
-                    this.getX(),
-                    this.getHeight(),
-                    this.getY());
+                    this.getX());
         }
 
         if (multiplierCountdown>0) {

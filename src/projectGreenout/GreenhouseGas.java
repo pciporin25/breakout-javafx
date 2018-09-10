@@ -16,16 +16,12 @@ public abstract class GreenhouseGas extends ImageView {
     public boolean checkForBallCollision() {
         if (this.getBoundsInParent().intersects(sceneBall.getBoundsInParent())) {
             sceneBall.brickCollision(this.getLayoutBounds().getWidth(),
-                    this.getX(),
-                    this.getLayoutBounds().getHeight(),
-                    this.getY());
+                    this.getX());
             return this.hitAndDestroy();
         }
         if (this.extraBall!=null && this.getBoundsInParent().intersects(extraBall.getBoundsInParent())) {
             extraBall.brickCollision(this.getLayoutBounds().getWidth(),
-                    this.getX(),
-                    this.getLayoutBounds().getHeight(),
-                    this.getY());
+                    this.getX());
             return this.hitAndDestroy();
         }
         return false;

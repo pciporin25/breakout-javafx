@@ -14,6 +14,7 @@ public class SecretLevel extends Level {
         super(backgroundImage, brickProbs, powerupProb, raftScale);
     }
 
+    //Initialize bricks on screen bottom
     @Override
     public void initializeBricks(Ball levelBall) {
         GreenhouseGas toPopulate[][] = new GreenhouseGas[3][8];
@@ -56,20 +57,10 @@ public class SecretLevel extends Level {
         this.bricks = toPopulate;
     }
 
+    //Y velocity should be reversed
     @Override
-    protected void checkBrickCollisions(Raft myRaft, Ball myBall) {
-        for (int row=0; row<bricks.length; row++) {
-            for (int col=0; col<bricks[row].length; col++) {
-                GreenhouseGas brick = bricks[row][col];
-
-                if (brick!=null && brick.checkForBallCollision()) {
-                    getSceneRoot().getChildren().remove(brick);
-                    bricks[row][col] = null;
-                    bricksRemaining.set(bricksRemaining.get() - 1);
-                    generatePowerUp(brick.getX(), brick.getY(), -30, myRaft, myBall);
-                }
-            }
-        }
+    protected void generatePowerUp(double startX, double startY, double speedY, Raft myRaft, Ball myBall) {
+        super.generatePowerUp(startX, startY, -1 * speedY, myRaft, myBall);
     }
 
 }

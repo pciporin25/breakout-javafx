@@ -4,7 +4,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.LongProperty;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 public class GameStatus {
@@ -17,7 +16,6 @@ public class GameStatus {
         root.getChildren().add(livesRemainingText);
         root.setTopAnchor(livesRemainingText, 10.0);
         root.setRightAnchor(livesRemainingText, 10.0);
-        //https://stackoverflow.com/questions/34514694/display-variable-value-in-text-javafx
         livesRemainingText.textProperty().bind(Bindings.createStringBinding(() -> "Lives Remaining: " + livesRemaining.get(), livesRemaining));
 
         this.bricksRemainingText = new Text("Bricks Remaining: " + bricksRemaining);

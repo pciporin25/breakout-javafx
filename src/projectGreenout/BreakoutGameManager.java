@@ -53,6 +53,7 @@ public class BreakoutGameManager extends Application
     private LongProperty livesRemaining = new SimpleLongProperty(3);
     private Text livesRemainingText;
     private boolean isGameOver = false;
+    private boolean startedSecretLevel = false;
 
     public static void main(String[] args)
     {
@@ -101,7 +102,9 @@ public class BreakoutGameManager extends Application
         myRaft = new Raft(image, myBall);
 
         this.myLevel = getNextLevel();
-        this.myGameStatus = new GameStatus(myLevel.getSceneRoot(), livesRemaining, myLevel.getBricksRemaining());
+        if (!isGameOver) {
+            this.myGameStatus = new GameStatus(myLevel.getSceneRoot(), livesRemaining, myLevel.getBricksRemaining());
+        }
 
         // respond to input
         myLevel.getScene().setOnKeyPressed(e -> handleKeyInput(e.getCode()));
@@ -110,11 +113,7 @@ public class BreakoutGameManager extends Application
     }
 
     private void gameOver() {
-        ImageView gameOverView = new ImageView(new Image(this.getClass().getClassLoader().getResourceAsStream("secret-level.jpg")));
-        this.splashLayout = new VBox();
-        splashLayout.getChildren().add(gameOverView);
-        Scene gameOverScene = new Scene(splashLayout);
-        gameStage.setScene(gameOverScene);
+        this.gameStage.setScene(setupLevel());
     }
 
 
@@ -123,7 +122,10 @@ public class BreakoutGameManager extends Application
 
         if (livesRemaining.get() <= 0 || this.isGameOver) {
             this.isGameOver = true;
-            gameOver();
+            if (!startedSecretLevel) {
+                gameOver();
+            }
+            this.startedSecretLevel = true;
         }
         else if (myLevel.getIsLevelCleared()) {
             this.gameStage.setScene(setupLevel());
@@ -198,9 +200,18 @@ public class BreakoutGameManager extends Application
 
     private Level getNextLevel() {
         //check if game is over
-        if (!this.myLevelIterator.hasNext()) {
+        if (!this.myLevelIterator.hasNext() || this.isGameOver) {
             this.isGameOver = true;
-            return null;
+
+            var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("secret-level.jpg"));
+            TreeMap<String, Double> secretLevelProbs = generateMap(0.1, 0.4, 0.5);
+            Level secretLevel = new SecretLevel(backgroundImage, secretLevelProbs, 1, 0.6);
+            secretLevel.getSceneRoot().getChildren().add(myRaft);
+            secretLevel.getSceneRoot().getChildren().add(myBall);
+            secretLevel.getSceneRoot().setTopAnchor(myRaft, 0.0);
+            secretLevel.initializeBricks(myBall);
+
+            return secretLevel;
         }
 
         Level nextLevel = this.myLevelIterator.next();

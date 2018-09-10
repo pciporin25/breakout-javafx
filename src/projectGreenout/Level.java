@@ -19,13 +19,13 @@ public class Level {
     private AnchorPane sceneRoot;
     public Scene levelScene;
 
-    private GreenhouseGas[][] bricks;
+    protected GreenhouseGas[][] bricks;
     private TreeMap<String, Double> gasProbabilities;
     private double co2prob;
     private double n2oprob;
     private double ch4prob;
 
-    private LongProperty bricksRemaining;
+    protected LongProperty bricksRemaining;
     private int timeRemaining;
 
     private double satelliteProb;
@@ -111,7 +111,7 @@ public class Level {
         this.bricks = toPopulate;
     }
 
-    private GreenhouseGas getGas(Map.Entry<String, Double> type, Ball myBall) {
+    protected GreenhouseGas getGas(Map.Entry<String, Double> type, Ball myBall) {
         switch (type.getKey()) {
             case "co2":
                 return new CO2(myBall);
@@ -153,6 +153,10 @@ public class Level {
 
     public double getRaftScale() {
         return this.raftScale;
+    }
+
+    public TreeMap<String, Double> getGasProbabilities() {
+        return this.gasProbabilities;
     }
 
     public void step(double elapsedTime, Raft myRaft, Ball myBall) {

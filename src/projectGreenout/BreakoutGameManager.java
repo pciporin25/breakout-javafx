@@ -90,25 +90,25 @@ public class BreakoutGameManager extends Application
         //create level 1
         var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level1.jpg"));
         TreeMap<String, Double> level1Probs = generateMap(0.8, 0.15, 0.05);
-        Level level1 = new Level(backgroundImage, level1Probs, 0.5, 1);
+        Level level1 = new Level(backgroundImage, level1Probs, 0.25, 1);
         myLevels.add(level1);
 
         //create level 2
         backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level2.jpg"));
         TreeMap<String, Double> level2Probs = generateMap(0.6, 0.2, 0.2);
-        Level level2 = new Level(backgroundImage, level2Probs, 1, 0.9);
+        Level level2 = new Level(backgroundImage, level2Probs, 0.4, 0.9);
         myLevels.add(level2);
 
         //create level 3
         backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level3.jpg"));
         TreeMap<String, Double> level3Probs = generateMap(0.3, 0.4, 0.3);
-        Level level3 = new Level(backgroundImage, level3Probs, 1, 0.8);
+        Level level3 = new Level(backgroundImage, level3Probs, 0.7, 0.8);
         myLevels.add(level3);
 
         //create level 4
         backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level4.jpg"));
         TreeMap<String, Double> level4Probs = generateMap(0.25, 0.35, 0.4);
-        Level level4 = new Level(backgroundImage, level4Probs, 1, 0.7);
+        Level level4 = new Level(backgroundImage, level4Probs, 0.8, 0.7);
         myLevels.add(level4);
 
         //create level 5
@@ -254,6 +254,24 @@ public class BreakoutGameManager extends Application
         myRaft.handleKeyInput(code, myScene.getWidth());
         myBall.handleKeyInput(code);
         myLevel.handleKeyInput(code, myRaft, myBall);
+
+        //CHEAT KEYS
+        //more lives
+        if (code == KeyCode.L) {
+            livesRemaining.set(livesRemaining.get() + 1);
+        }
+        //secret level
+        else if (code == KeyCode.S) {
+            this.isGameOver = true;
+        }
+        //all blocks destroy with one hit
+        else if (code == KeyCode.A) {
+            for (int i=0; i<this.myLevel.getBricks().length; i++) {
+                for (int j=0; j<this.myLevel.getBricks()[i].length; j++) {
+                   this.myLevel.getBricks()[i][j].oneHitRemaining();
+                }
+            }
+        }
     }
 
     private void addNewBall() {

@@ -44,14 +44,3 @@ trash on the ocean floor.  There will be equivalent blocks to the four described
 underwater), and the game configuration will be upside down (with the raft sitting on top of the water and the blocks
 resting on the floor).  I believe this is a substantial edition because it puts a unique spin on the game by flipping it
 upside down.
-
-GameManager:
--lives remaining
-
-Levels:
--Percentage probability for each type of brick
--2D array of bricks
--Percentage probability of power-ups
--Background image
--Satellite probability
--timer

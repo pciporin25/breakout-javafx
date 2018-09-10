@@ -31,6 +31,10 @@ public abstract class GreenhouseGas extends ImageView {
         this.extraBall = ball;
     }
 
+    public void oneHitRemaining() {
+        this.hitsRemaining = 0;
+    }
+
     public abstract boolean hitAndDestroy();
 
 }

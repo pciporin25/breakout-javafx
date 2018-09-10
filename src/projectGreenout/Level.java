@@ -175,7 +175,7 @@ public class Level {
         }
     }
 
-    private void checkBrickCollisions(Raft myRaft, Ball myBall) {
+    protected void checkBrickCollisions(Raft myRaft, Ball myBall) {
         for (int row=0; row<bricks.length; row++) {
             for (int col=0; col<bricks[row].length; col++) {
                 GreenhouseGas brick = bricks[row][col];
@@ -190,7 +190,7 @@ public class Level {
         }
     }
 
-    private void generatePowerUp(double startX, double startY, double speedY, Raft myRaft, Ball myBall) {
+    protected void generatePowerUp(double startX, double startY, double speedY, Raft myRaft, Ball myBall) {
         //Only generate the powerup if none are active and probability is satisfied
         if (activePowerUp==null && Math.random() < powerupProb) {
             activePowerUp = new PowerUp(startX, startY, speedY, myRaft, myBall, this);

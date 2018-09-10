@@ -96,7 +96,7 @@ public class BreakoutGameManager extends Application
 
     private Scene setupLevel() {
         var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
-        myBall = new Ball(image, -1, 1, SCENE_WIDTH, 0);
+        myBall = new Ball(image, -1, 1, SCENE_WIDTH, 0, isGameOver);
 
         image = new Image(this.getClass().getClassLoader().getResourceAsStream(RAFT_IMAGE));
         myRaft = new Raft(image, myBall);
@@ -114,6 +114,14 @@ public class BreakoutGameManager extends Application
 
     private void gameOver() {
         this.gameStage.setScene(setupLevel());
+        this.myLevel.getScene().setOnMouseClicked(e -> showSecretLevel());
+    }
+
+    private void showSecretLevel() {
+        myLevel.getSceneRoot().getChildren().add(myRaft);
+        myLevel.getSceneRoot().getChildren().add(myBall);
+        myLevel.getSceneRoot().setTopAnchor(myRaft, 0.0);
+        myLevel.initializeBricks(myBall);
     }
 
 
@@ -142,7 +150,6 @@ public class BreakoutGameManager extends Application
         //Only for non-extra ball
         if (myBall.getY() > myScene.getHeight()) {
             livesRemaining.set(livesRemaining.get() - 1);
-            myBall.resetBall();
         }
         if (myExtraBall!=null && myExtraBall.getY() > myScene.getHeight()) {
             myLevel.setIsExtraBall(false);
@@ -204,12 +211,8 @@ public class BreakoutGameManager extends Application
             this.isGameOver = true;
 
             var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("secret-level.jpg"));
-            TreeMap<String, Double> secretLevelProbs = generateMap(0.1, 0.4, 0.5);
-            Level secretLevel = new SecretLevel(backgroundImage, secretLevelProbs, 1, 0.6);
-            secretLevel.getSceneRoot().getChildren().add(myRaft);
-            secretLevel.getSceneRoot().getChildren().add(myBall);
-            secretLevel.getSceneRoot().setTopAnchor(myRaft, 0.0);
-            secretLevel.initializeBricks(myBall);
+            TreeMap<String, Double> secretLevelProbs = generateMap(0.4, 0.4, 0.2);
+            Level secretLevel = new SecretLevel(backgroundImage, secretLevelProbs, 1, 1.0);
 
             return secretLevel;
         }
@@ -236,7 +239,7 @@ public class BreakoutGameManager extends Application
         if (this.myExtraBall == null) {
             System.out.println("extra");
             var image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
-            this.myExtraBall = new Ball(image, -1, 1, SCENE_WIDTH, 0);
+            this.myExtraBall = new Ball(image, -1, 1, SCENE_WIDTH, 0, isGameOver);
             this.myLevel.getSceneRoot().getChildren().add(myExtraBall);
             this.myRaft.addExtraBall(myExtraBall);
             for (GreenhouseGas[] row : this.myLevel.getBricks()) {

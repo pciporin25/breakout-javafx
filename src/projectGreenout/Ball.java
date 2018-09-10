@@ -13,6 +13,7 @@ public class Ball extends ImageView {
     private boolean outOfPlay;
     private double startPosX;
     private double startPosY;
+    private boolean isSecretBall;
 
     private int strengthMultiplier = 1;
     private int multiplierCountdown = -1;
@@ -20,10 +21,11 @@ public class Ball extends ImageView {
     Image multiplied = new Image(N2O.class.getClassLoader().getResourceAsStream("ball-multiplied.gif"));
 
 
-    public Ball(Image image, double myDirectionX, double myDirectionY, double posX, double posY) {
+    public Ball(Image image, double myDirectionX, double myDirectionY, double posX, double posY, boolean isSecretBall) {
         super(image);
         this.original = image;
         this.outOfPlay = false;
+        this.isSecretBall = isSecretBall;
 
         this.width = image.getWidth();
         this.height = image.getHeight();
@@ -33,8 +35,15 @@ public class Ball extends ImageView {
 
         this.startPosX = posX - this.width;
         this.startPosY = posY;
+
+        if (this.isSecretBall) {
+            this.startPosY = posY + 350;
+            this.directionY = myDirectionY * -1;
+        }
+
         this.setX(startPosX);
         this.setY(startPosY);
+
     }
 
     public void step(double elapsedTime, int speed, double sceneWidth, double sceneHeight) {
@@ -42,8 +51,17 @@ public class Ball extends ImageView {
             this.directionX *= -1;
         }
 
-        if (this.getY() < 0) {
+        if (this.isSecretBall && this.getY() < 0) {
+            this.resetBall();
+        }
+        else if (this.getY() < 0) {
             this.directionY *= -1;
+        }
+        else if (this.isSecretBall && this.getY() >= sceneHeight) {
+            this.directionY *= -1;
+        }
+        else if (this.getY() > sceneHeight) {
+            this.resetBall();
         }
 
         this.setX(this.getX() + speed * this.directionX * elapsedTime);
@@ -61,6 +79,7 @@ public class Ball extends ImageView {
                               double raftPositionX,
                               double raftHeight,
                               double raftPositionY) {
+        /*
         //if ball intersects with top half of raft, y direction negative (up)
         if (this.getY() > raftPositionY + (raftHeight / 2)) {
             this.directionY = -1;
@@ -70,6 +89,8 @@ public class Ball extends ImageView {
         else {
             this.directionY = 1;
         }
+        */
+        this.directionY *= -1;
 
 
         //if ball intersects with second half of raft, x direction positive
@@ -97,7 +118,7 @@ public class Ball extends ImageView {
             this.directionY = 1;
         }
         */
-        this.directionY = 1;
+        this.directionY *= -1;
 
         //if ball intersects with right half of brick, x direction postive (right)
         if (this.getX() > brickPositionX + (brickWidth / 2)) {
@@ -121,8 +142,14 @@ public class Ball extends ImageView {
         //check if raft is in bounds before processing movement
         if (code == KeyCode.SPACE && this.outOfPlay == true) {
             this.outOfPlay = false;
-            this.directionX = 1;
-            this.directionY = 1;
+            if (!this.isSecretBall) {
+                this.directionX = 1;
+                this.directionY = 1;
+            }
+            else {
+                this.directionX = -1;
+                this.directionY = -1;
+            }
         }
 
     }

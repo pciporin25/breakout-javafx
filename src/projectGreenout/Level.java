@@ -28,6 +28,7 @@ public class Level {
     private double satelliteProb;
     private double powerupProb;
     private PowerUp activePowerUp;
+    private double raftScale;
 
     private boolean isExtraBall = false;
     private boolean isLevelCleared = false;
@@ -35,11 +36,13 @@ public class Level {
 
     public Level(Image backgroundImage,
                  double brickProbs[],
-                 double powerupProb) {
+                 double powerupProb,
+                 double raftScale) {
 
         //Set up scene before generating bricks
         setupScene(backgroundImage);
         this.powerupProb = powerupProb;
+        this.raftScale = raftScale;
 
         //Set brick generation probabilities and populate bricks array
         try {
@@ -123,6 +126,10 @@ public class Level {
 
     public AnchorPane getSceneRoot() {
         return this.sceneRoot;
+    }
+
+    public double getRaftScale() {
+        return this.raftScale;
     }
 
     public void step(double elapsedTime, Raft myRaft, Ball myBall) {

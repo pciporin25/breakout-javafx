@@ -27,6 +27,7 @@ import java.security.Key;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 public class BreakoutGameManager extends Application
 {
@@ -38,7 +39,7 @@ public class BreakoutGameManager extends Application
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final int BALL_SPEED = 60;
-    public static final int RAFT_SPEED = 10;
+    public static final int RAFT_SPEED = 20;
 
     private Pane splashLayout;
 
@@ -150,14 +151,14 @@ public class BreakoutGameManager extends Application
         //create level 1
         var backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level1.jpg"));
         double[] level1Probs = {0.75, 0.2, 0.05};
-        Level level1 = new Level(backgroundImage, level1Probs, 0.5);
+        Level level1 = new Level(backgroundImage, level1Probs, 0.5, 1);
         myLevels.add(level1);
 
 
         //create level 2
         backgroundImage = new Image(this.getClass().getClassLoader().getResourceAsStream("level2.jpg"));
         double[] level2Probs = {0.5, 0.3, 0.2};
-        Level level2 = new Level(backgroundImage, level2Probs, 1);
+        Level level2 = new Level(backgroundImage, level2Probs, 1, 0.5);
         myLevels.add(level2);
 
 
@@ -165,8 +166,9 @@ public class BreakoutGameManager extends Application
     }
 
     private Level getNextLevel() {
-
         Level nextLevel = this.myLevelIterator.next();
+        myRaft.setScaleX(nextLevel.getRaftScale());
+        myRaft.setScaleY(nextLevel.getRaftScale());
         nextLevel.getSceneRoot().getChildren().add(myRaft);
         nextLevel.getSceneRoot().getChildren().add(myBall);
         nextLevel.getSceneRoot().setBottomAnchor(myRaft, 0.0);
